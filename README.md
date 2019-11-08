@@ -10,7 +10,7 @@
 </h1>
 
 <h4 align="center">
-  <br>Nitrx 🕷️ is An Intelligent Bot Auto Gift card Cracker!</br>
+  <br>Nitrx 🕷️ is An Intelligent Bot Auto Gift cards Cracker!</br>
 </h4>
 
 <p align="center">
