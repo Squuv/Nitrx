@@ -4,7 +4,9 @@ import random
 import requests
 import string
 import os
+import re
 import time
+import platform
 import threading
 from fake_useragent import UserAgent
 
@@ -12,6 +14,8 @@ from fake_useragent import UserAgent
 # By BrahimJarrar
 # Discord : lorra#4700
 # 2019
+
+system = platform.system()
 
 RED     =  "\033[1;31m"
 BLUE    =  "\033[1;34m"
@@ -22,6 +26,25 @@ BOLD    =  "\033[;1m"
 REVERSE =  "\033[;7m"
 YELLOW  =  "\033[33m"
 HEADER  =  "\033[95m"
+
+if system.startswith("Windows"):
+    print("You Are using ",system)
+    per = input("do you want to use colors[Y/n] ")
+    if per == "Y" or per == "y":
+        pass
+    else:
+        RED     =  ""
+        BLUE    =  ""
+        CYAN    =  ""
+        GREEN   =  ""
+        RESET   =  ""
+        BOLD    =  ""
+        REVERSE =  ""
+        YELLOW  =  ""
+        HEADER  =  ""
+    os.system("cls")
+else:
+    os.system("clear")
 
 invalid = YELLOW + "Invalid" + RESET
 valid = GREEN + "Valid" + RESET
@@ -38,11 +61,18 @@ headers = {
     'Connection': 'keep-alive',
 }
 
+Pe = 1
 
-def Nitrx(code, headers, proxy, g, b, s):
+def Nitrx(code, headers, proxy, g, b, s,lines,ip):
+    try:
+        global running
+        running += 1
+    except:
+        running = 0
     url = "https://discordapp.com/api/v6/entitlements/gift-codes/{}?with_application=false&with_subscription_plan=true".format(code)
     gencode = code
     code = HEADER+code+RESET
+    time.sleep(0.05)
     try:
         rr = s.get(url, headers=headers, proxies=proxy)
         if "Unknown Gift Code" in rr.text:
@@ -58,14 +88,23 @@ def Nitrx(code, headers, proxy, g, b, s):
         else:
             print(code+"          "+error+"          SSL")
     except requests.exceptions.ProxyError:
+        try:
+            lines.remove(ip)
+        except:
+            pass
+    except requests.exceptions.InvalidProxyURL:
+        try:
+            lines.remove(ip)
+        except:
+            pass
         print(code+"          "+error+"          Proxies")
-        return
-    except requests.exceptions.SSLError:
-        pass
     except requests.exceptions.ConnectionError:
         print(code+"          "+error+"          Network")
+    except KeyboardInterrupt:
+        exit(GREEN+"[+] GoodBye")
     g.close()
     b.close()
+    running -= 1
 
 def uslist():
     file = input("     [?] File name: ")
@@ -83,6 +122,7 @@ def uslist():
         b = open('results/bads.txt', 'a')
         s = requests.session()
         ip = random.choice(ips)
+        ip1 = ip
         ip = str(ip).replace('\n', '')
         hts = "https://"+ip
         ht = "http://"+ip
@@ -92,7 +132,7 @@ def uslist():
         }
         headers['User-Agent'] = ua.random
         time.sleep(0.01)
-        x = threading.Thread(target=Nitrx, args=(code, headers, proxy, g, b, s,))
+        x = threading.Thread(target=Nitrx, args=(code, headers, proxy, g, b, s,lines,ip1))
         x.start()
 
 
@@ -114,35 +154,7 @@ def Generator():
 
 
 def auto():
-    p = open("proxy.txt", "r")
-    lines = p.readlines()
-    amount = int(input("     [?] amount of codes: "))
-    cln = int(input("     [?] Code Letters number: "))
-    fix = 1
-    print(GREEN+"     [?] Table info : Code - Status - Type\n")
-    while fix <= amount:
-        g = open('results/gods.txt', 'a')
-        b = open('results/bads.txt', 'a')
-        s = requests.session()
-        ip = random.choice(lines)
-        ip = str(ip).replace('\n', '')
-        hts = "https://"+ip
-        ht = "http://"+ip
-        proxy = {
-            "https":hts,
-            "http":ht
-        }
-        headers['User-Agent'] = ua.random
-        code = ('').join(random.choices(string.ascii_letters + string.digits, k=cln))
-        a = open("results/bads.txt", "r")
-        time.sleep(0.001)
-
-        if code in a.read():
-            pass
-        else:
-            fix += 1
-            x = threading.Thread(target=Nitrx, args=(code, headers, proxy, g, b, s,))
-            x.start()
+    pass
 
 
 if __name__ == "__main__":
@@ -165,14 +177,50 @@ if __name__ == "__main__":
         GREEN,BLUE,YELLOW,BOLD,YELLOW,RESET)
 
     for i in msg:
-        time.sleep(0.005)
+        time.sleep(0.001)
         print(i, end='')
     try:
         opi = int(input("\n     " + RED + "[?] Chose : "+CYAN))
     except:
         exit('     [?] Invalid option..')
     if opi == 1:
-        auto()
+        p = open("proxy.txt", "r")
+        lines = p.readlines()
+        amount = int(input("     [?] amount of codes: "))
+        cln = int(input("     [?] Code Letters number: "))
+        max = int(input("     [?] Threads: "))
+        fix = 1
+        print(GREEN+"     [?] Table info : Code - Status - Type\n")
+        running = 0
+        while fix <= amount:
+            if running < max:
+                g = open('results/gods.txt', 'a')
+                b = open('results/bads.txt', 'a')
+                s = requests.session()
+                ip1 = random.choice(lines)
+                ip = str(ip1).replace('\n', '')
+                hts = "https://"+ip
+                ht = "http://"+ip
+                proxy = {
+                    "https":hts,
+                    "http":ht
+                }
+                headers['User-Agent'] = ua.random
+                code = ('').join(random.choices(string.ascii_letters + string.digits, k=cln))
+                a = open("results/bads.txt", "r")
+                time.sleep(0.001)
+
+                if str(fix).endswith("00"):
+                    time.sleep(7.5)
+                else:
+                    pass
+
+                if code in a.read():
+                    pass
+                else:
+                    fix += 1
+                    x = threading.Thread(target=Nitrx, args=(code, headers, proxy, g, b, s,lines,ip1))
+                    x.start()
     elif opi == 2:
         uslist()
     elif opi == 3:
