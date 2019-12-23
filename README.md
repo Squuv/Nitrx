@@ -64,6 +64,8 @@ You can contribute in following ways:
 - Searching Exploits
 - Give suggestions **(Ideas)** to make it better
 
-Do you want to have a conversation in private? Discord : **Lorra#4700**
+Do you want to have a conversation in private? Discord : **Squv#6969**
+
+<iframe src="https://discordapp.com/widget?id=651810770958417920&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe>
 
 ***Nitrx*** is licensed under [GPL-3.0 License](https://github.com/BrahimJarrar/Nitrx/blob/master/LICENSE)
