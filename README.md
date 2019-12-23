@@ -14,7 +14,11 @@
 </h4>
 
 <p align="center">
-   <a href="https://github.com/BrahimJarrar/">
+  <a href="https://discord.gg/sJbmQVs">
+    <img src="https://discordapp.com/api/guilds/651810770958417920/embed.png">
+  </a>
+  
+  <a href="https://github.com/BrahimJarrar/">
     <img src="https://img.shields.io/github/license/BrahimJarrar/Nitrx">
   </a>
 
@@ -66,6 +70,5 @@ You can contribute in following ways:
 
 Do you want to have a conversation in private? Discord : **Squv#6969**
 
-<iframe src="https://discordapp.com/widget?id=651810770958417920&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe>
 
 ***Nitrx*** is licensed under [GPL-3.0 License](https://github.com/BrahimJarrar/Nitrx/blob/master/LICENSE)
