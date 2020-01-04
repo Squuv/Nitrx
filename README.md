@@ -15,7 +15,7 @@
 
 <p align="center">
   <a href="https://discord.gg/sJbmQVs">
-    <img src="https://discordapp.com/api/guilds/651810770958417920/embed.png">
+    <img src="https://discordapp.com/api/guilds/662338808200822795/embed.png">
   </a>
   
   <a href="https://github.com/Squuv/">
