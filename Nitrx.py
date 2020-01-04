@@ -11,7 +11,7 @@ import threading
 from fake_useragent import UserAgent
 
 
-# By BrahimJarrar
+# By Squuv
 # Discord : lorra#4700
 # 2019
 
