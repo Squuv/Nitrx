@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="https://github.com/BrahimJarrar">
+  <a href="https://github.com/Squuv">
     <img src="https://images.discordapp.net/avatars/482584715673600026/3813e13cf3e89eb5ab314dcda58f5d96.png?size=512" alt="Nitrx " width="250">
   </a>
   </br>
@@ -18,26 +18,26 @@
     <img src="https://discordapp.com/api/guilds/651810770958417920/embed.png">
   </a>
   
-  <a href="https://github.com/BrahimJarrar/">
-    <img src="https://img.shields.io/github/license/BrahimJarrar/Nitrx">
+  <a href="https://github.com/Squuv/">
+    <img src="https://img.shields.io/github/license/Squuv/Nitrx">
   </a>
 
   <a href="https://pypi.org/project/Orusula/">
     <img src="https://img.shields.io/badge/pypi-Nitrx-red.svg">
   </a>
 
-  <a href="https://travis-ci.com/BrahimJarrar/Nitrx">
-    <img src="https://api.travis-ci.com/BrahimJarrar/Nitrx.svg">
+  <a href="https://travis-ci.com/Squuv/Nitrx">
+    <img src="https://api.travis-ci.com/Squuv/Nitrx.svg">
   </a>
   <br></br>
-  <img src="https://github.com/BrahimJarrar/Nitrx/blob/master/Screen/nitrx.PNG" alt="Nitrx " width="95%">
+  <img src="https://github.com/Squuv/Nitrx/blob/master/Screen/nitrx.PNG" alt="Nitrx " width="95%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/BrahimJarrar/Nitrx/wiki">Nitrx Wiki</a> •
-  <a href="https://github.com/BrahimJarrar/Nitrx/wiki/Usage">How To Use</a> •
-  <a href="https://github.com/BrahimJarrar/Nitrx/wiki/Compatibility-&-Dependencies">Compatibility</a> •
-  <a href="https://github.com/BrahimJarrar/Nitrx/wiki/Nitrx-Library">Library</a> •
+  <a href="https://github.com/Squuv/Nitrx/wiki">Nitrx Wiki</a> •
+  <a href="https://github.com/Squuv/Nitrx/wiki/Usage">How To Use</a> •
+  <a href="https://github.com/Squuv/Nitrx/wiki/Compatibility-&-Dependencies">Compatibility</a> •
+  <a href="https://github.com/Squuv/Nitrx/wiki/Nitrx-Library">Library</a> •
 </p>
 
 -------------------------------------
