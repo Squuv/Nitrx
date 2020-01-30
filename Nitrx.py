@@ -1,229 +1,211 @@
 #!/usr/bin/env python
 
-import random
-import requests
-import string
-import os
-import re
-import time
+from requests.exceptions import ProxyError, SSLError, ConnectionError, InvalidProxyURL, ChunkedEncodingError
+import multiprocessing
+from threading import Thread
+import fake_useragent
 import platform
-import threading
-from fake_useragent import UserAgent
+import requests
+import random
+import string
+import json
+import time
+import re
+import os
+
+def config():
+    try:
+        with open(os.path.join(path, 'config.json'), 'r', encoding='utf-8') as setting:
+            config = json.load(setting)
+            proxies = config['proxies']
+            debug = config['debug']
+            output = config['output']
+            timeout = config['timeout']
+            return config
+    except:
+        print('Failed loading "config.json"')
 
 
-# By Squuv
-# Discord : lorra#4700
-# 2019
+path, _ = os.path.split(__file__)
+config = config()
+ua = fake_useragent.UserAgent()
+proxy_file = open(config['proxies'], "r")
+proxy_text = proxy_file.readlines()
+reverse = str("\033[;7m")
+green = str("\033[0;32m")
+blue = str("\033[1;34m")
+cyan = str("\033[1;36m")
+reset = str("\033[0;0m")
+yellow = str("\033[33m")
+header = str("\033[95m")
+red = str("\033[1;31m")
+bold = str("\033[;1m")
+not_checked = []
 
-system = platform.system()
+def headers():
+    header = {
+        'User-Agent' : ua.random,
+        'content-type':'application/json',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+    }
+    return header
 
-RED     =  "\033[1;31m"
-BLUE    =  "\033[1;34m"
-CYAN    =  "\033[1;36m"
-GREEN   =  "\033[0;32m"
-RESET   =  "\033[0;0m"
-BOLD    =  "\033[;1m"
-REVERSE =  "\033[;7m"
-YELLOW  =  "\033[33m"
-HEADER  =  "\033[95m"
+def process():
+    print("    [+] Process Running Successfully... \n")
+    sec = 0
+    while True:
+        time.sleep(1)
+        sec += 1
+        if str(sec).endswith("00"):
+            os.system("clear")
 
-if system.startswith("Windows"):
-    print("You Are using ",system)
-    per = input("do you want to use colors[Y/n] ")
-    if per == "Y" or per == "y":
+def proxies():
+    line = random.choice(proxy_text)
+    ip = line.replace('\n', '')
+    if str(ip).startswith('http'):
         pass
     else:
-        RED     =  ""
-        BLUE    =  ""
-        CYAN    =  ""
-        GREEN   =  ""
-        RESET   =  ""
-        BOLD    =  ""
-        REVERSE =  ""
-        YELLOW  =  ""
-        HEADER  =  ""
-    os.system("cls")
-else:
-    os.system("clear")
+        https = "https://"+ip
+        http = "http://"+ip
+    proxy = {
+        "https":https,
+        "http":http
+    }
+    return proxy
 
-invalid = YELLOW + "Invalid" + RESET
-valid = GREEN + "Valid" + RESET
-error = RED + "Error" + RESET
-denied = CYAN + "Denied" + RESET
+def code():
+    if option == 2:
+        try:
+            line = random.choice(codes)
+            code = line.replace('\n', '')
+            codes.remove(line)
+        except IndexError:
+            code = ('').join(random.choices(string.ascii_letters + string.digits, k=16))
+    else:
+        code = ('').join(random.choices(string.ascii_letters + string.digits, k=16))
+    return code
 
-ua = UserAgent()
+def save(code):
+    file = open(config['output'], 'a')
+    write_code = code + "\n"
+    file.write(write_code)
+    file.close()
 
-headers = {
-    'User-Agent' : ua.random,
-    'Content_Type' : 'multipart/form-data',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Connection': 'keep-alive',
-}
+def debug(code, text, proxy, show):
+    try:
+        line = blue + proxy['http'].split('//')[1]
+        host = blue + str(line.split(':')[0])
+        port = blue + str(line.split(':')[1])
+    except:
+        return
+    if show.lower() == 'error' or show.lower() == 'message':
+        not_checked.append(code)
+        if config['debug'] == False:
+            return
+        text = red + text + reset
+    if 'Invalid' in text:
+        text = yellow + text + reset
+    elif 'Valid' in text:
+        text = green + text + reset
+    code = header + code + reset
+    logo = str(blue + "[" + red + "nitrx" + blue + "]" + reset)
+    print('{0:16} {1:26} {2:18} {3:22}'.format(logo, code, text, line))
 
-Pe = 1
-
-def Nitrx(code, headers, proxy, g, b, s,lines,ip):
+def nitrx(code, headers, proxy):
     try:
         global running
         running += 1
     except:
         running = 0
+    s = requests.session()
+    s.proxies = proxy
     url = "https://discordapp.com/api/v6/entitlements/gift-codes/{}?with_application=false&with_subscription_plan=true".format(code)
-    gencode = code
-    code = HEADER+code+RESET
-    time.sleep(0.05)
     try:
-        rr = s.get(url, headers=headers, proxies=proxy)
-        if "Unknown Gift Code" in rr.text:
-            print(code+"          "+invalid)
-            b.write(gencode+"\n")
-        elif "subscription_plan" in rr.text:
-            print(code+"          "+valid)
-            g.write(gencode+"\n")
-        elif "You are being rate limited" in rr.text:
-            print(code+"          "+error+"          Limited")
-        elif "Access denied" in rr.text:
-            print(code+"          "+denied)
+        rr = s.get(url, headers=headers, timeout=config['timeout'])
+        if "subscription_plan".lower() in (rr.text).lower():
+            save(code)
+            debug(code, "Valid", proxy, "Valid")
+            running -= 1
+            exit()
+        o = json.loads(rr.text)
+        message = o["message"].lower()
+        if message == "Unknown Gift Code".lower():
+            debug(code, "Invalid", proxy, 'Invalid')
+        elif message == "You are being rate limited.".lower():
+            debug(code, "Message", proxy, 'Message')
+        elif message == "Access denied":
+            debug(code, "Message", proxy, 'Message')
         else:
-            print(code+"          "+error+"          SSL")
-    except requests.exceptions.ProxyError:
-        try:
-            lines.remove(ip)
-        except:
-            pass
-    except requests.exceptions.InvalidProxyURL:
-        try:
-            lines.remove(ip)
-        except:
-            pass
-        print(code+"          "+error+"          Proxies")
-    except requests.exceptions.ConnectionError:
-        print(code+"          "+error+"          Network")
+            print(rr.text)
+
     except KeyboardInterrupt:
-        exit(GREEN+"[+] GoodBye")
-    g.close()
-    b.close()
+        exit("[*] GoodBye")
+    except ProxyError:
+        debug(code, "Proxy", proxy, 'Error')
+    except SSLError:
+        debug(code, "SSL", proxy, 'Error')
+    except ConnectionError:
+        debug(code, "Connect", proxy, 'Error')
+    except InvalidProxyURL:
+        debug(code, "Proxy URL", proxy, 'Error')
+    except requests.exceptions.ReadTimeout:
+        debug(code, "Timeout", proxy, 'Error')
+    except UnicodeError:
+        debug(code, "UnicodeError", proxy, 'Error')
+    except ChunkedEncodingError:
+        debug(code, "Encoding", proxy, 'Error')
+    except json.decoder.JSONDecodeError:
+        debug(code, "J.Decode", proxy, 'Decode')
+
     running -= 1
+    exit()
 
-def uslist():
-    file = input("     [?] File name: ")
-    if os.path.isfile(file):
-        pass
-    else:
-        exit(RED+"     [?] Invalid file")
-    p = open(file, "r")
-    lines = p.readlines()
-    p = open("proxy.txt", "r")
-    ips = p.readlines()
-    for i in lines:
-        code = i.strip()
-        g = open('results/gods.txt', 'a')
-        b = open('results/bads.txt', 'a')
-        s = requests.session()
-        ip = random.choice(ips)
-        ip1 = ip
-        ip = str(ip).replace('\n', '')
-        hts = "https://"+ip
-        ht = "http://"+ip
-        proxy = {
-            "https":hts,
-            "http":ht
-        }
-        headers['User-Agent'] = ua.random
-        time.sleep(0.01)
-        x = threading.Thread(target=Nitrx, args=(code, headers, proxy, g, b, s,lines,ip1))
-        x.start()
-
-
-def Generator():
-    file = open('results/gen.txt', 'a')
+if __name__ == '__main__':
     try:
-        amount = int(input("     [?] amount of codes: "))
-        cln = int(input("     [?] Code Letters number: "))
-    except:
-        exit("     [? Invalid input]")
-    fix = 1
-    while fix <= amount:
-        code = ('').join(random.choices(string.ascii_letters + string.digits, k=cln))
-        print(code)
-        fix += 1
-        file.write(code+"\n")
-    file.close()
-    exit(RED+"     [+] Goodbye")
+        msg = f""" {header}
+        ███╗   ██╗██╗████████╗██████╗ ██╗  ██╗
+        ████╗  ██║██║╚══██╔══╝██╔══██╗╚██╗██╔╝
+        ██╔██╗ ██║██║   ██║   ██████╔╝ ╚███╔╝ 
+        ██║╚██╗██║██║   ██║   ██╔══██╗ ██╔██╗    V 2
+        ██║ ╚████║██║   ██║   ██║  ██║██╔╝ ██╗
+        ╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝\n
+                    {yellow}By {cyan}Twitter {red}Squuv \n
 
+        {red}1{green}- {yellow}[{reset}Auto{yellow}]{blue} Generator and Scann
+        {red}2{green}- {blue}Check Codes From {yellow}[{reset}LIST{yellow}]
+        """
 
-def auto():
-    pass
-
-
-if __name__ == "__main__":
-    msg = """
-    {}
-    ███╗   ██╗██╗████████╗██████╗ ██╗  ██╗
-    ████╗  ██║██║╚══██╔══╝██╔══██╗╚██╗██╔╝
-    ██╔██╗ ██║██║   ██║   ██████╔╝ ╚███╔╝ 
-    ██║╚██╗██║██║   ██║   ██╔══██╗ ██╔██╗ 
-    ██║ ╚████║██║   ██║   ██║  ██║██╔╝ ██╗
-    ╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝\n
-                {}By {}@BrahimJarrar\n
-
-        1{}- {}[{}Auto{}]{} Generator and Scann
-        {}2{}- {}Check Codes From {}[{}LIST{}]
-        {}3{}- {}Just Code {}[{}Generator{}]{}\n
-
-    """.format(HEADER,YELLOW,RED,GREEN,YELLOW,BOLD,
-        YELLOW,BLUE,RED,GREEN,BLUE,YELLOW,BOLD,YELLOW,RED,
-        GREEN,BLUE,YELLOW,BOLD,YELLOW,RESET)
-
-    for i in msg:
-        time.sleep(0.001)
-        print(i, end='')
-    try:
-        opi = int(input("\n     " + RED + "[?] Chose : "+CYAN))
-    except:
-        exit('     [?] Invalid option..')
-    if opi == 1:
-        p = open("proxy.txt", "r")
-        lines = p.readlines()
-        amount = int(input("     [?] amount of codes: "))
-        cln = int(input("     [?] Code Letters number: "))
-        max = int(input("     [?] Threads: "))
-        fix = 1
-        print(GREEN+"     [?] Table info : Code - Status - Type\n")
+        for l in msg:
+            time.sleep(.005)
+            print(l, end='')
+        try:
+            option = int(input("\n" + red + "    [?] Chose : "+cyan))
+        except:
+            exit('    [?] Invalid option..')
+        if option == 2:
+            file = input("    [?] File : ")
+            codes = open(file, "r")
+            codes = codes.readlines()
+        print(green+"    [?] Table info : Code - Status - Proxy")
+        mythreads = []
+        pr = multiprocessing.Process(target=process)
+        pr.start()
         running = 0
-        while fix <= amount:
-            if running < max:
-                g = open('results/gods.txt', 'a')
-                b = open('results/bads.txt', 'a')
-                s = requests.session()
-                ip1 = random.choice(lines)
-                ip = str(ip1).replace('\n', '')
-                hts = "https://"+ip
-                ht = "http://"+ip
-                proxy = {
-                    "https":hts,
-                    "http":ht
-                }
-                headers['User-Agent'] = ua.random
-                code = ('').join(random.choices(string.ascii_letters + string.digits, k=cln))
-                a = open("results/bads.txt", "r")
-                time.sleep(0.001)
-
-                if str(fix).endswith("00"):
-                    time.sleep(7.5)
-                else:
-                    pass
-
-                if code in a.read():
-                    pass
-                else:
-                    fix += 1
-                    x = threading.Thread(target=Nitrx, args=(code, headers, proxy, g, b, s,lines,ip1))
+        while True:
+            if running <= config["threads"]:
+                x = Thread(target=nitrx, args=(code(), headers(), proxies(),))
+                mythreads.append(x)
+                x.start()
+            else:
+                time.sleep(1)
+                for unchecked_code in not_checked:
+                    x = Thread(target=nitrx, args=(code(), headers(), proxies(),))
+                    mythreads.append(x)
                     x.start()
-    elif opi == 2:
-        uslist()
-    elif opi == 3:
-        Generator()
-    else:
-        exit('     [?] Invalid option..')
+                    not_checked.remove(unchecked_code)
+    except KeyboardInterrupt:
+        exit("\tGoodBye")
+    except FileNotFoundError:
+        exit("\tInvalid File Path")
