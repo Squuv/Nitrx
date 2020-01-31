@@ -3,6 +3,7 @@
 import requests
 from tqdm import tqdm
 import threading
+import json
 import time
 import sys
 import re
@@ -12,7 +13,7 @@ proxies = []
 
 def config():
     try:
-        with open(os.path.join(path, 'config.json'), 'r', encoding='utf-8') as setting:
+        with open('config.json', 'r', encoding='utf-8') as setting:
             config = json.load(setting)
             proxies = config['proxies']
             debug = config['debug']
